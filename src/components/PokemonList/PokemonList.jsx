@@ -7,16 +7,28 @@ const PokemonList = () => {
     const [pokemonList, setPokemonList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const POKEDEX_URL = "https://pokeapi.co/api/v2/pokemon/";
+
     async function downloadPokemons() {
-        const response = await axios.get("https://pokeapi.co/api/v2/pokemon/");
+        const response = await axios.get(POKEDEX_URL); // This downloads list of 20 pokemon. 
         console.log(response)
-        const pokemonResults = response.data.results;
+
+        const pokemonResults = response.data.results; // we get the array of pokemons from result
         console.log(pokemonResults);
+
+        /*
+            iterating over the array of pokemons, and using their url, to create an array of promises
+            that will download those 20 pokemons.  
+        */
         const pokemonResultPromise = pokemonResults.map((pokemon) => axios.get(pokemon.url))
         console.log(pokemonResultPromise)
-        const pokemonData = await axios.all(pokemonResultPromise)
+
+        // passing that promise arrayto axios.all
+        const pokemonData = await axios.all(pokemonResultPromise) // array of 20 pokemon detailed data
         console.log(pokemonData);
-        const result = pokemonData.map((pokeData) => {
+
+        // now iterate on the data of each pokemon, and extract id, name, image and types.
+        const pokeListResult = pokemonData.map((pokeData) => {
             const pokemon = pokeData.data;
             console.log(pokemon);
             return {
@@ -26,8 +38,9 @@ const PokemonList = () => {
                 types: pokemon.types
             }
         });
-        console.log(result);
-        setPokemonList(result);
+
+        console.log(pokeListResult);
+        setPokemonList(pokeListResult);
         setIsLoading(false);
     }
 
@@ -37,10 +50,15 @@ const PokemonList = () => {
 
   return (
     <div className="pokemon-list-wrapper">
-        <div>Pokemon List</div>
-        {(isLoading) ? 'Loading...' : 
-            pokemonList.map((p) => <Pokemon name={p.name} image={p.image} key={p.id} />
-        )}
+        <div className="pokemon-wrapper">
+            {(isLoading) ? 'Loading...' : 
+                pokemonList.map((p) => <Pokemon name={p.name} image={p.image} key={p.id} />
+            )}
+        </div>
+        <div className="controls">
+            <button>Prev</button>
+            <button>Next</button>
+        </div>
     </div>
   )
 }

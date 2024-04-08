@@ -2,4 +2,7 @@
     box-sizing: border-box;
     font-family: "MuseoModerno", sans-serif;
 }
- 
+
+body {
+    background-color: antiquewhite;
+}
