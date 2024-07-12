@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import axios from 'axios';
 import "./PokemonList.css"
 import Pokemon from "../Pokemon/Pokemon";
-const PokemonList = () => {
+const PokemonList = ({ search }) => {
 
     // const [ pokemonList, setPokemonList ] = useState([]);
     // const [ isLoading, setIsLoading ] = useState(true);
@@ -74,11 +74,16 @@ const PokemonList = () => {
         downloadPokemons();
     }, [pokemonListState.pokedexUrl])
 
+    const filteredPokemonList = pokemonListState.pokemonList.filter((pokemon) =>
+        pokemon.name.toLowerCase().includes(search.toLowerCase())
+    );
+
   return (
     <div className="pokemon-list-wrapper">
         <div className="pokemon-wrapper">
             {(pokemonListState.isLoading) ? 'Loading...' : 
-                pokemonListState.pokemonList.map((p) => <Pokemon name={p.name} image={p.image} id={p.id} key={p.id} />
+                filteredPokemonList.map((p) => (
+                    <Pokemon name={p.name} image={p.image} id={p.id} key={p.id} />)
             )}
         </div>
         <div className="controls">
